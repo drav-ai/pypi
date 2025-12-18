@@ -58,7 +58,7 @@ RUN pip install -r requirements.txt \
 
 1. Wheels are uploaded as GitHub Release assets to this repository
 2. A GitHub Action regenerates the PEP-503 compliant index
-3. The index is pushed to the `gh-pages` branch
+3. The index is committed to the `main` branch in `simple/`
 4. GitHub Pages serves the index at `https://drav-ai.github.io/pypi/simple/`
 
 ## Publishing Packages
@@ -98,7 +98,7 @@ pypi/
       update-index.yml    # Regenerates index on release/dispatch
   scripts/
     generate_index.py     # PEP-503 index generator
-  simple/                 # Generated index (on gh-pages branch)
+  simple/                 # Generated PEP-503 index (served by GitHub Pages)
     index.html
     aiverse-schemas/
       index.html

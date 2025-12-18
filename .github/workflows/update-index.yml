@@ -28,17 +28,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  generate-index:
+  generate-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      packages_count: ${{ steps.generate.outputs.packages_count }}
-      wheels_count: ${{ steps.generate.outputs.wheels_count }}
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -85,28 +84,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit and push to gh-pages
+      - name: Commit index to main
         run: |
-          # Preserve generated files before switching branches
-          # The simple/ directory was generated in the previous step and exists only in working dir
-          mv simple /tmp/generated-simple
-          
-          # Check if gh-pages branch exists
-          if git ls-remote --exit-code --heads origin gh-pages; then
-            git fetch origin gh-pages
-            git checkout gh-pages
-            # Remove old simple directory if it exists
-            rm -rf simple
-          else
-            # Create orphan gh-pages branch
-            git checkout --orphan gh-pages
-            git rm -rf .
-          fi
-          
-          # Restore the generated files from temp location
-          mv /tmp/generated-simple simple
-          
-          # Add and commit
           git add simple/
           
           # Only commit if there are changes
@@ -118,23 +97,9 @@ jobs:
           Trigger: ${{ github.event_name }}
           Packages: ${{ steps.generate.outputs.packages_count }}
           Wheels: ${{ steps.generate.outputs.wheels_count }}"
-            git push origin gh-pages --force
-            echo "Index pushed to gh-pages branch"
+            git push origin main
+            echo "Index committed to main branch"
           fi
-
-  deploy-pages:
-    needs: generate-index
-    runs-on: ubuntu-latest
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Checkout gh-pages
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -151,5 +116,4 @@ jobs:
       - name: Output deployment URL
         run: |
           echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
-          echo "Index URL: ${{ steps.deployment.outputs.page_url }}simple/"
-
+          echo "Index URL: ${{ steps.deployment.outputs.page_url }}"
