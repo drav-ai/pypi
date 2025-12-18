@@ -1,0 +1,4 @@
+# Dependencies for generate_index.py
+requests>=2.31.0
+packaging>=23.0
+
