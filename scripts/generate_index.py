@@ -12,7 +12,6 @@ Environment Variables:
 """
 
 import argparse
-import hashlib
 import os
 import re
 import sys
@@ -303,9 +302,7 @@ def write_index(output_dir: Path, packages: dict[str, list[WheelInfo]]) -> None:
 
 def main() -> int:
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Generate PEP-503 compliant PyPI index from GitHub releases"
-    )
+    parser = argparse.ArgumentParser(description="Generate PEP-503 compliant PyPI index from GitHub releases")
     parser.add_argument(
         "--repo",
         default=os.environ.get("GITHUB_REPOSITORY", DEFAULT_REPO),
@@ -348,4 +345,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
